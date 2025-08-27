@@ -6,6 +6,7 @@ import com.solvd.it.exceptions.*;
 import com.solvd.it.enums.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import static com.solvd.it.company.LawRequirements.lawsIncluded;
@@ -16,6 +17,9 @@ import static com.solvd.it.company.LawRequirements.getDaysUntilApprobation;
 public class Main {
     public static void main(String[] args) {
         final Logger LOGGER = (Logger) LogManager.getLogger(Main.class);
+
+        InputReader inputReader = new InputReader();
+        inputReader.processFile();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -300,21 +304,16 @@ public class Main {
                         float optionExtra = (float) (cost * 0.1);
                         LOGGER.info("Due to the type of architecture desired, there could be an extra cost of " + optionExtra);
                     }
-                    validArchitecture = true; // valid choice, exit loop
+                    validArchitecture = true;
                 } else {
                     LOGGER.error("Invalid input. Please enter a valid option (1–5).");
                 }
 
             } catch (InputMismatchException e) {
                 LOGGER.error("Invalid input. Please enter a number.", e);
-                scanner.nextLine(); // clear invalid input
+                scanner.nextLine();
             }
         }
-
-
-
-
-
 
         LOGGER.info("Enter the project scope (e.g., E-commerce Website, Mobile App, etc.):");
         String scopeName = scanner.nextLine();
