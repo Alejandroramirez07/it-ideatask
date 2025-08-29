@@ -41,4 +41,4 @@ Usage
 This is a easy to use project for every customization you could think. It has lots of tools intented to be edited in order to have a simple maven configurations.
 Fork this project and deploy it with tools as tomcat to get advantage of this it ideas calculator
 
-This project is licensed under the (Choose a license, e.g., MIT, Apache 2.0).
+This project is not licensed. Use it for all intends and porpuses
