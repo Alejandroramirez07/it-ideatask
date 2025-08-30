@@ -1,25 +1,21 @@
 package com.solvd.it.company;
-
-import com.solvd.it.app.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
-import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class InputReader {
-    private static final Logger LOGGER = (Logger) LogManager.getLogger(InputReader.class);
+    private static final Logger LOGGER = LogManager.getLogger(InputReader.class);
     public void processFile() {
         String[] targetWords = {"architecture", "hexagonal", "java"};
         String[] words = {"empty"};
-
         Map<String, Integer> wordCounts = new HashMap<>();
+
         for (String word : targetWords) {
             wordCounts.put(word.toLowerCase(), 0);
         }
