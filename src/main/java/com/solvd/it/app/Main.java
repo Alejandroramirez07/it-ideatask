@@ -4,6 +4,9 @@ import com.solvd.it.compInterfaces.StockProjects;
 import com.solvd.it.company.*;
 import com.solvd.it.exceptions.*;
 import com.solvd.it.enums.*;
+import com.solvd.it.functionalInterfaces.ApprobationHours;
+import com.solvd.it.functionalInterfaces.HolidaysThreshold;
+import com.solvd.it.functionalInterfaces.RecommendedOS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -357,15 +360,31 @@ public class Main {
         LOGGER.info("according to your costs, your project receives" + stateIncentive);
         client.discounts();
 
+        RecommendedOS recommendedOS = (operativeSystems) -> {
+            LOGGER.info("Recommended Operative systems: " + operativeSystems);
+        };
+
+        recommendedOS.listOperativeSystem("Windows 10, Ubuntu 22, MacOs Ventura");
+
         LOGGER.info(" On average the amount of holidays weeks per developer is: " + averageHolidaysWeeks);
 
         if (averageHolidaysWeeks>weeks){
             LOGGER.info("Your timeline is at risk of getting delayed");
         }
 
+        HolidaysThreshold holidaysThreshold = () -> {if (averageHolidaysWeeks>=3){LOGGER.info(" The average weeks of holidays is getting too high");}};
+
         project.reOffer((float) cost);
 
         int daysUntilApprobation= getDaysUntilApprobation();
+
+        ApprobationHours approbationHours = (daysApprobation) -> {
+            float workHoursUntilApprobation = daysApprobation * 8;
+            LOGGER.info("The work hours required to approve the project are: " + workHoursUntilApprobation);
+            return workHoursUntilApprobation;
+        };
+
+        approbationHours.approbationHours(daysUntilApprobation);
 
         for (String s : lawsIncluded()) {
             LOGGER.info(s + " required");
