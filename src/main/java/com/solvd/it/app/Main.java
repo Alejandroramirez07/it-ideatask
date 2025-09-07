@@ -11,10 +11,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.solvd.it.company.LawRequirements.lawsIncluded;
 import static com.solvd.it.company.Team.maxTeam;
 import static com.solvd.it.company.LawRequirements.getDaysUntilApprobation;
+import static java.util.Arrays.stream;
+import static org.apache.commons.lang3.BooleanUtils.forEach;
 
 
 public class Main {
@@ -178,9 +181,8 @@ public class Main {
             LOGGER.error("Invalid team size, cannot be negative: "+ e.getMessage());
         }
 
-        for (Developer dev : devList) {
-            dev.valueRole();
-        }
+        devList.stream()
+                .forEach(Developer::valueRole);
 
         LOGGER.info("Enter project duration in weeks: ");
         int weeks = scanner.nextInt();
@@ -220,25 +222,24 @@ public class Main {
             featuresList.add(featureNameInput);
         }
 
-        for (Developer name : devList){
-            timeOutForHire.queueCandidate(String.valueOf(name));
-        }
+        devList.stream()
+                .map(String::valueOf)
+                .forEach(timeOutForHire::queueCandidate);
 
-        for (Map.Entry<Integer, String> entry :scoresEntered.entrySet()){
-            LOGGER.info(entry.getKey() + " -> " + entry.getValue());
-            if (entry.getKey()>=60){
-                timeOutForHire.approveCandidate(entry.getValue());
-            }
-        }
+        scoresEntered.entrySet().stream()
+                .peek(entry -> LOGGER.info(entry.getKey() + " -> " + entry.getValue()))
+                .filter(entry -> entry.getKey() >= 60)
+                .map(Map.Entry::getValue)
+                .forEach(timeOutForHire::approveCandidate);
+
 
         int featureDaysInput = weeks * 7;
         Feature feature = new Feature(featureDaysInput, featuresList);
 
         List<TimeOutForHire.ITEmployee> itEmployees = new ArrayList<>();
 
-        for (Developer dev : devList) {
-            itEmployees.add(dev);
-        }
+        devList.stream()
+                .forEach(itEmployees::add);
 
         int totalHours=hoursPerWeek * weeks;
 
@@ -252,9 +253,8 @@ public class Main {
 
         LOGGER.info(" Stocking Projects ");
 
-        for (StockProjects item : stockList){
-            item.stockProjects();
-        }
+        stockList.stream()
+                .forEach(StockProjects::stockProjects);
 
         LOGGER.info("Enter manager name: ");
         String managerName = scanner.nextLine();
@@ -280,12 +280,13 @@ public class Main {
         }
 
         LOGGER.info("Your IT project may be used with the next cloud services and availability levels");
-        for (CloudServices cloudServices : CloudServices.values()){
-            LOGGER.info(cloudServices + "with an availability level of: ");
-            LOGGER.info(cloudServices.cloudAvailability);
-        }
+
+        stream(CloudServices.values())
+                .peek(cloudServices -> LOGGER.info(cloudServices + " with an availability level of: "))
+                .forEach(cloudServices -> LOGGER.info(String.valueOf(cloudServices.cloudAvailability)));
 
         LOGGER.info("You may choose one of the next types of architecture for your project, choose from 1 to 5 only");
+
         int option=1;
         for(ArchitectureTypes architectureTypes: ArchitectureTypes.values()){
             LOGGER.info(option);
@@ -350,9 +351,10 @@ public class Main {
         LOGGER.info("You need to deliver this project before " + projectProcess.getDeadlineDelivery());
 
         LOGGER.info("\n--- IT Employees Overview ---");
-        for (TimeOutForHire.ITEmployee employee : itEmployees) {
-            employee.itEmployee();
-        }
+
+        itEmployees.stream()
+                .forEach(TimeOutForHire.ITEmployee::itEmployee);
+
         timeOutForHire.toolsManagement();
         report.printReport();
         StateIncentive<Report> stateIncentive =new StateIncentive<Report>();
@@ -386,14 +388,13 @@ public class Main {
 
         approbationHours.approbationHours(daysUntilApprobation);
 
-        for (String s : lawsIncluded()) {
-            LOGGER.info(s + " required");
-        }
+        lawsIncluded().stream()
+                .forEach(s -> LOGGER.info(" required"));
 
         LOGGER.info("If you want to have a visit at our physical locations, we have plenty of options to visit our offices: ");
-        for (Offices offices: Offices.values()){
-            LOGGER.info(offices.officeAddress);
-        }
+
+        Arrays.stream(Offices.values())
+                .forEach(offices -> LOGGER.info(offices.officeAddress));
 
         LOGGER.info("Remember that the final approbation of the project is required by law under " + daysUntilApprobation + " days ");
 
