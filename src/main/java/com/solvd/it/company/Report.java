@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 
-
+@CheckBeforeDelivery
 public class Report extends Procedures{
     private static final Logger LOGGER = (Logger) LogManager.getLogger(Report.class);
     private float totalCost;

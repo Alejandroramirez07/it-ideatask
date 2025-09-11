@@ -1,5 +1,7 @@
 package com.solvd.it.app;
 
+import com.solvd.it.annotations.CheckBeforeDelivery;
+import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.compInterfaces.StockProjects;
 import com.solvd.it.company.*;
 import com.solvd.it.exceptions.*;
@@ -12,6 +14,8 @@ import com.solvd.it.record.LawRequirements;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.solvd.it.company.Team.maxTeam;
@@ -355,11 +359,33 @@ public class Main {
                 .forEach(TimeOutForHire.ITEmployee::itEmployee);
 
         timeOutForHire.toolsManagement();
-        report.printReport();
+
+        if (report.getClass().isAnnotationPresent(CheckBeforeDelivery.class)){
+            report.printReport();
+        }else{
+            LOGGER.error("Lack of annotation to check");
+        }
+
         StateIncentive<Report> stateIncentive =new StateIncentive<Report>();
         stateIncentive.setStateIncentive(report);
         LOGGER.info("according to your costs, your project receives" + stateIncentive);
         client.discounts();
+
+        for (Method method:  client.getClass().getDeclaredMethods()){
+            if (method.isAnnotationPresent(PriorityToRun.class)){
+                LOGGER.info("Client will get the offer in time if needed");
+                try {
+                    method.invoke(client);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }else {
+                LOGGER.error("discount should have priority");
+            }
+
+        }
 
         RecommendedOS recommendedOS = (operativeSystems) -> {
             LOGGER.info("Recommended Operative systems: " + operativeSystems);

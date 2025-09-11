@@ -1,5 +1,6 @@
 package com.solvd.it.company;
 
+import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.compInterfaces.Discounts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +44,7 @@ public class Client extends Scope implements Discounts<String> {
     }
 
     @Override
+    @PriorityToRun
     public void discounts() {
         if (Objects.equals(getScope(), "nat")){
             LOGGER.info("The client " + name + " will get a discount for his/her/its next project.");
