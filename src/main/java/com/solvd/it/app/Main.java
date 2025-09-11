@@ -7,17 +7,16 @@ import com.solvd.it.enums.*;
 import com.solvd.it.functionalInterfaces.ApprobationHours;
 import com.solvd.it.functionalInterfaces.HolidaysThreshold;
 import com.solvd.it.functionalInterfaces.RecommendedOS;
+import com.solvd.it.record.Feature;
+import com.solvd.it.record.LawRequirements;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.solvd.it.company.LawRequirements.lawsIncluded;
 import static com.solvd.it.company.Team.maxTeam;
-import static com.solvd.it.company.LawRequirements.getDaysUntilApprobation;
+
 import static java.util.Arrays.stream;
-import static org.apache.commons.lang3.BooleanUtils.forEach;
 
 
 public class Main {
@@ -346,7 +345,7 @@ public class Main {
         LOGGER.info("Project: " + project.getProjectName() + " (" + project.getComplexityLevel() + ")");
         LOGGER.info( projectProcess.achievability() + " and " + project.achievability());
         LOGGER.info("This project has a/an " + client.getScope() + " scope ");
-        LOGGER.info("Estimated Features: " + feature.getFeaturesList());
+        LOGGER.info("Estimated Features: " + feature.featureList());
         LOGGER.info("Technology Stack: " + techStack.getTechnologies());
         LOGGER.info("You need to deliver this project before " + projectProcess.getDeadlineDelivery());
 
@@ -378,7 +377,7 @@ public class Main {
 
         project.reOffer((float) cost);
 
-        int daysUntilApprobation= getDaysUntilApprobation();
+        int daysUntilApprobation= LawRequirements.daysUntilApprobation;
 
         ApprobationHours approbationHours = (daysApprobation) -> {
             float workHoursUntilApprobation = daysApprobation * 8;
@@ -388,7 +387,7 @@ public class Main {
 
         approbationHours.approbationHours(daysUntilApprobation);
 
-        lawsIncluded().stream()
+        LawRequirements.lawsIncluded.stream()
                 .forEach(s -> LOGGER.info(" required"));
 
         LOGGER.info("If you want to have a visit at our physical locations, we have plenty of options to visit our offices: ");
