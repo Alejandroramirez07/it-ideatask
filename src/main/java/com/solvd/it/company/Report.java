@@ -1,5 +1,6 @@
 package com.solvd.it.company;
 
+import com.solvd.it.annotations.CheckBeforeDelivery;
 import com.solvd.it.compAbstract.Procedures;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

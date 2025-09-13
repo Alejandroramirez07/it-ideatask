@@ -11,6 +11,8 @@ import com.solvd.it.functionalInterfaces.HolidaysThreshold;
 import com.solvd.it.functionalInterfaces.RecommendedOS;
 import com.solvd.it.record.Feature;
 import com.solvd.it.record.LawRequirements;
+import com.solvd.it.threads.ProjectRecommendationsThread;
+import com.solvd.it.threads.SecRecommendationsThread;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,6 +31,12 @@ public class Main {
 
         InputReader inputReader = new InputReader();
         inputReader.processFile();
+
+        SecRecommendationsThread secRecommendationsThread =new SecRecommendationsThread();
+        ProjectRecommendationsThread projectRecommendationsThread = new ProjectRecommendationsThread();
+
+        secRecommendationsThread.start();
+        projectRecommendationsThread.start();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -399,7 +407,9 @@ public class Main {
             LOGGER.info("Your timeline is at risk of getting delayed");
         }
 
-        HolidaysThreshold holidaysThreshold = () -> {if (averageHolidaysWeeks>=3){LOGGER.info(" The average weeks of holidays is getting too high");}};
+        HolidaysThreshold holidaysThreshold = () -> {
+            if (averageHolidaysWeeks>=3){LOGGER.info(" The average weeks of holidays is getting too high");
+            }};
 
         project.reOffer((float) cost);
 
