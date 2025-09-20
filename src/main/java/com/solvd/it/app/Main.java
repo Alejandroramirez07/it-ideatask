@@ -27,7 +27,7 @@ import static java.util.Arrays.stream;
 
 public class Main {
     public static void main(String[] args) {
-        final Logger LOGGER = (Logger) LogManager.getLogger(Main.class);
+        final Logger LOGGER = LogManager.getLogger(Main.class);
 
         InputReader inputReader = new InputReader();
         inputReader.processFile();
@@ -189,7 +189,7 @@ public class Main {
         try{
             team = new Team(devList, maxTeam);
         }catch(InvalidTeamSizeException e){
-            LOGGER.error("Invalid team size, cannot be negative: "+ e.getMessage());
+            LOGGER.error("Invalid team size, cannot be negative: {}", e.getMessage());
         }
 
         devList.stream()
@@ -349,6 +349,7 @@ public class Main {
         LOGGER.info("Ads creation process for '" + projectScope.getScope() + "' completed successfully!");
 
         assert team != null;
+        assert projectProcess != null;
         Report report = new Report((float) cost, projectProcess.getWeeks(), team.getTeamSize(), timeOutForHire.averageHolidaysReplacement);
 
         LOGGER.info("\n--- Project Summary ---");
@@ -384,9 +385,7 @@ public class Main {
                 LOGGER.info("Client will get the offer in time if needed");
                 try {
                     method.invoke(client);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
+                } catch (IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
             }else {
