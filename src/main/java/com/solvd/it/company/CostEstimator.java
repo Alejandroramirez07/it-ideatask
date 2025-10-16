@@ -1,6 +1,5 @@
 package com.solvd.it.company;
 
-import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.exceptions.InvalidHoursPerDayException;
 
 public class CostEstimator {
