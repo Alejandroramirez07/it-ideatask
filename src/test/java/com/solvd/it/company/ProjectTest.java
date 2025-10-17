@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProjectTest {
 
-    // --------------------------------------------------------------------
-    // ✅ Static method tests
-    // --------------------------------------------------------------------
     @ParameterizedTest(name = "Project name: {0}, expected valid: {1}")
     @CsvSource({
             "'AI', false",
@@ -25,9 +22,6 @@ class ProjectTest {
         assertEquals(expected, result);
     }
 
-    // --------------------------------------------------------------------
-    // ✅ Achievability logic
-    // --------------------------------------------------------------------
     @Test
     @DisplayName("achievability_lowBudgetLowComplexity_issueMessage")
     void achievability_lowBudgetLowComplexity_issueMessage() {
@@ -60,9 +54,6 @@ class ProjectTest {
         assertTrue(result.contains("is achievable"));
     }
 
-    // --------------------------------------------------------------------
-    // ✅ Evaluate and summarize (side effects tested indirectly)
-    // --------------------------------------------------------------------
     @Test
     @DisplayName("evaluateProject_doesNotThrow")
     void evaluateProject_doesNotThrow() {
@@ -77,9 +68,6 @@ class ProjectTest {
         assertDoesNotThrow(p::summarize);
     }
 
-    // --------------------------------------------------------------------
-    // ✅ Getters and setters
-    // --------------------------------------------------------------------
     @Test
     void gettersAndSetters_modifyAndRetrieveValuesCorrectly() {
         Project p = new Project("OldName", "low", 1000f, "Client");
@@ -92,9 +80,6 @@ class ProjectTest {
         assertEquals(1234f, p.getInitialBudget());
     }
 
-    // --------------------------------------------------------------------
-    // ✅ toString, equals, hashCode
-    // --------------------------------------------------------------------
     @Test
     void toString_containsAllFields() {
         Project p = new Project("ToStr", "mid", 2000f, "Client");
@@ -122,9 +107,6 @@ class ProjectTest {
         assertNotEquals(p1, p2);
     }
 
-    // --------------------------------------------------------------------
-    // ✅ discounts and reOffer logic
-    // --------------------------------------------------------------------
     @Test
     @DisplayName("discounts_appliesTenPercentDiscount")
     void discounts_appliesTenPercentDiscount() {
@@ -160,3 +142,5 @@ class ProjectTest {
         assertEquals(5000f, result);
     }
 }
+
+// Co-generated with AI assistance (GPT-5), reviewed and validated by Alejandro Ramirez
