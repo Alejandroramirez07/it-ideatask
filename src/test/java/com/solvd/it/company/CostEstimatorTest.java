@@ -2,15 +2,18 @@ package com.solvd.it.company;
 
 import com.solvd.it.exceptions.InvalidHoursPerDayException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CostEstimatorTest {
 
     @Mock
@@ -21,34 +24,38 @@ class CostEstimatorTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        reset(mockTeam, mockProjectProcess);
     }
 
     @Test
-    @DisplayName("estimateCost_validInput_correctCalculation")
-    void estimateCost_validInput_correctCalculation() throws InvalidHoursPerDayException {
+    @DisplayName("estimateCost_validInput_correctCalculationAndVerification")
+    void estimateCost_validInput_correctCalculationAndVerification() throws InvalidHoursPerDayException {
         when(mockTeam.getAverageHourlyRate()).thenReturn(50.0f);
         when(mockTeam.getTeamSize()).thenReturn(4);
         when(mockProjectProcess.getHoursPerWeek()).thenReturn(5);
 
         float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, 8);
 
-        // totalHours = 4 * 8 * 5 = 160
-        // expected cost = 50 * 160 = 8000
+        // 4 * 8 * 5 = 160 total hours → 160 * 50 = 8000
         assertEquals(8000.0f, result, 0.001f);
+
+        verify(mockTeam, times(1)).getAverageHourlyRate();
+        verify(mockTeam, times(1)).getTeamSize();
+        verify(mockProjectProcess, times(1)).getHoursPerWeek();
     }
 
     @Test
-    @DisplayName("estimateCost_zeroHoursPerDay_returnsZero")
-    void estimateCost_zeroHoursPerDay_returnsZero() throws InvalidHoursPerDayException {
-        when(mockTeam.getAverageHourlyRate()).thenReturn(100.0f);
-        when(mockTeam.getTeamSize()).thenReturn(3);
-        when(mockProjectProcess.getHoursPerWeek()).thenReturn(10);
+    @DisplayName("estimateCost_boundaryHoursPerDay24_validResultAndInteractions")
+    void estimateCost_boundaryHoursPerDay24_validResultAndInteractions() throws InvalidHoursPerDayException {
+        when(mockTeam.getAverageHourlyRate()).thenReturn(40.0f);
+        when(mockTeam.getTeamSize()).thenReturn(5);
+        when(mockProjectProcess.getHoursPerWeek()).thenReturn(7);
 
-        float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, 0);
+        float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, 24);
 
-        // expected cost = 0 since hoursPerDay = 0
-        assertEquals(0.0f, result, 0.001f);
+        assertEquals(33600.0f, result, 0.001f);
+        verify(mockTeam, atLeastOnce()).getAverageHourlyRate();
+        verify(mockProjectProcess, atLeastOnce()).getHoursPerWeek();
     }
 
     @Test
@@ -57,6 +64,7 @@ class CostEstimatorTest {
         assertThrows(InvalidHoursPerDayException.class, () ->
                 CostEstimator.estimateCost(mockTeam, mockProjectProcess, 25)
         );
+        verifyNoInteractions(mockTeam, mockProjectProcess);
     }
 
     @Test
@@ -65,20 +73,27 @@ class CostEstimatorTest {
         assertThrows(InvalidHoursPerDayException.class, () ->
                 CostEstimator.estimateCost(mockTeam, mockProjectProcess, -5)
         );
+        verifyNoInteractions(mockTeam, mockProjectProcess);
     }
 
-    @Test
-    @DisplayName("estimateCost_boundaryHoursPerDay24_validResult")
-    void estimateCost_boundaryHoursPerDay24_validResult() throws InvalidHoursPerDayException {
-        when(mockTeam.getAverageHourlyRate()).thenReturn(40.0f);
+    @ParameterizedTest(name = "hoursPerDay={0}, expectedCost={1}")
+    @CsvSource({
+            "1, 1000.0",
+            "2, 2000.0",
+            "4, 4000.0"
+    })
+    @DisplayName("estimateCost_parameterizedValidInputs_computesExpectedCost")
+    void estimateCost_parameterizedValidInputs_computesExpectedCost(int hoursPerDay, float expectedCost)
+            throws InvalidHoursPerDayException {
+
+        when(mockTeam.getAverageHourlyRate()).thenReturn(50.0f);
         when(mockTeam.getTeamSize()).thenReturn(5);
-        when(mockProjectProcess.getHoursPerWeek()).thenReturn(7);
+        when(mockProjectProcess.getHoursPerWeek()).thenReturn(4);
 
-        float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, 24);
+        float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, hoursPerDay);
 
-        // totalHours = 5 * 24 * 7 = 840
-        // expected cost = 40 * 840 = 33600
-        assertEquals(33600.0f, result, 0.001f);
+        // totalHours = 5 * hoursPerDay * 4
+        assertEquals(expectedCost, result, 0.001f);
     }
 
     @Test
@@ -89,3 +104,5 @@ class CostEstimatorTest {
         );
     }
 }
+
+// Co-generated with AI assistance (GPT-5), reviewed and validated by Alejandro Ramirez
