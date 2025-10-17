@@ -36,7 +36,6 @@ class CostEstimatorTest {
 
         float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, 8);
 
-        // 4 * 8 * 5 = 160 total hours → 160 * 50 = 8000
         assertEquals(8000.0f, result, 0.001f);
 
         verify(mockTeam, times(1)).getAverageHourlyRate();
@@ -92,7 +91,6 @@ class CostEstimatorTest {
 
         float result = CostEstimator.estimateCost(mockTeam, mockProjectProcess, hoursPerDay);
 
-        // totalHours = 5 * hoursPerDay * 4
         assertEquals(expectedCost, result, 0.001f);
     }
 
