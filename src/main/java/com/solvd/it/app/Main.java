@@ -164,7 +164,7 @@ public class Main {
                 score = (int) scanner.nextInt();
             }
 
-            scoresEntered.put(score, name);
+            scoresEntered.put(Integer.valueOf(score), name);
 
             LOGGER.info("How may weeks of holidays are approved? ");
             int holidaysSchedule = scanner.nextInt();
@@ -300,10 +300,10 @@ public class Main {
 
         int option=1;
         for(ArchitectureTypes architectureTypes: ArchitectureTypes.values()){
-            LOGGER.info(option);
+            LOGGER.info(Optional.of(option));
             LOGGER.info(architectureTypes);
             LOGGER.info("with a complexity level of ");
-            LOGGER.info(architectureTypes.maintenanceLevelArchitecture);
+            LOGGER.info(Optional.of(architectureTypes.maintenanceLevelArchitecture));
             option ++;
         }
 
@@ -410,7 +410,7 @@ public class Main {
             if (averageHolidaysWeeks>=3){LOGGER.info(" The average weeks of holidays is getting too high");
             }};
 
-        project.reOffer((float) cost);
+        project.reOffer(Float.valueOf((float) cost));
 
         int daysUntilApprobation= LawRequirements.daysUntilApprobation;
 
