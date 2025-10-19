@@ -4,6 +4,7 @@ import com.solvd.it.annotations.CheckBeforeDelivery;
 import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.compInterfaces.StockProjects;
 import com.solvd.it.company.*;
+import com.solvd.it.dao.ProjectDAO;
 import com.solvd.it.exceptions.*;
 import com.solvd.it.enums.*;
 import com.solvd.it.functionalInterfaces.ApprobationHours;
@@ -28,6 +29,10 @@ import static java.util.Arrays.stream;
 public class Main {
     public static void main(String[] args) {
         final Logger LOGGER = LogManager.getLogger(Main.class);
+
+        Project projectdb = new Project("AI Dashboard", "mid", 2000, "TechCorp");
+        ProjectDAO projectDAO = new ProjectDAO();
+        projectDAO.save(projectdb);
 
         InputReader inputReader = new InputReader();
         inputReader.processFile();
