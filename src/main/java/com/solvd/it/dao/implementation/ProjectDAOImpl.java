@@ -1,10 +1,10 @@
-package com.solvd.it.dao;
+package com.solvd.it.dao.implementation;
 
 import com.solvd.it.util.ConnectionPool;
 import com.solvd.it.company.Project;
 import java.sql.*;
 
-public class ProjectDAO {
+public class ProjectDAOImpl {
 
     public void save(Project project) {
         String sql = "INSERT INTO projects (name, project_code) VALUES (?, ?)";

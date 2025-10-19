@@ -4,12 +4,14 @@ import com.solvd.it.annotations.CheckBeforeDelivery;
 import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.compInterfaces.StockProjects;
 import com.solvd.it.company.*;
-import com.solvd.it.dao.ProjectDAO;
+import com.solvd.it.dao.implementation.ProjectDAOImpl;
+import com.solvd.it.dao.implementation.SplunkMonitoringDAOImpl;
 import com.solvd.it.exceptions.*;
 import com.solvd.it.enums.*;
 import com.solvd.it.functionalInterfaces.ApprobationHours;
 import com.solvd.it.functionalInterfaces.HolidaysThreshold;
 import com.solvd.it.functionalInterfaces.RecommendedOS;
+import com.solvd.it.monitoring.SplunkMonitoring;
 import com.solvd.it.record.Feature;
 import com.solvd.it.record.LawRequirements;
 import com.solvd.it.threads.ProjectRecommendationsThread;
@@ -29,10 +31,6 @@ import static java.util.Arrays.stream;
 public class Main {
     public static void main(String[] args) {
         final Logger LOGGER = LogManager.getLogger(Main.class);
-
-        Project projectdb = new Project("AI Dashboard", "mid", 2000, "TechCorp");
-        ProjectDAO projectDAO = new ProjectDAO();
-        projectDAO.save(projectdb);
 
         InputReader inputReader = new InputReader();
         inputReader.processFile();
@@ -98,7 +96,7 @@ public class Main {
             complexity = scanner.nextLine();
         }
 
-        int features=0;
+        int features;
 
         while(true) {
             try {
@@ -161,15 +159,15 @@ public class Main {
             scanner.nextLine();
 
             LOGGER.info("Score in the test  (1-100) ");
-            score = (int) scanner.nextInt();
+            score = scanner.nextInt();
 
             while (score<0 || score>100){
                 LOGGER.error("THE SCORE MUST BE (1-100) ");
                 LOGGER.info("Please, enter the score again ");
-                score = (int) scanner.nextInt();
+                score = scanner.nextInt();
             }
 
-            scoresEntered.put(Integer.valueOf(score), name);
+            scoresEntered.put(score, name);
 
             LOGGER.info("How may weeks of holidays are approved? ");
             int holidaysSchedule = scanner.nextInt();
@@ -184,7 +182,7 @@ public class Main {
             }
 
             try{
-                devList.add(new Developer(name, level,(float) rate, holidaysSchedule));
+                devList.add(new Developer(name, level, rate, holidaysSchedule));
             }catch(InvalidHourlyRateException | InvalidHolidaysException e){
                 LOGGER.error("Failed to create developer: " + e.getMessage() );
             }
@@ -334,6 +332,33 @@ public class Main {
                 scanner.nextLine();
             }
         }
+
+        LOGGER.info("Please, enter the project code");
+        int projectCode=scanner.nextInt();
+
+        LOGGER.info("Please, enter the comments from the monitor");
+        String monitorComments= scanner.nextLine();
+
+        LOGGER.info("Please, enter the number of incidents");
+        int numberIncidents= scanner.nextInt();
+
+        SplunkMonitoring splunkMonitoring = new SplunkMonitoring(projectCode, monitorComments, numberIncidents);
+        SplunkMonitoringDAOImpl splunkMonitoringDAOImpl =new SplunkMonitoringDAOImpl();
+        splunkMonitoringDAOImpl.save(splunkMonitoring);
+
+        splunkMonitoringDAOImpl.findAll();
+
+        LOGGER.info("if you wanto to delete a project from monitoring press 1, if you dont, press any other key");
+        int optionDeletingMonitoring=scanner.nextInt();
+
+        if (optionDeletingMonitoring==1){
+            LOGGER.info("please type the project_code to delete");
+            int projectToDeleteMonitoring=scanner.nextInt();
+            splunkMonitoringDAOImpl.findById(projectToDeleteMonitoring);
+        }
+
+
+
 
         LOGGER.info("Enter the project scope (e.g., E-commerce Website, Mobile App, etc.):");
         String scopeName = scanner.nextLine();
