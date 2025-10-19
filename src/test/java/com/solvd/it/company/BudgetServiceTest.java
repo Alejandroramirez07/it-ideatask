@@ -27,7 +27,7 @@ class BudgetServiceTest {
     void isBudgetFeasible_estimatedCostBelowMax_returnsTrue() {
         try (MockedStatic<CostEstimator> mockedEstimator = mockStatic(CostEstimator.class)) {
             mockedEstimator.when(() -> CostEstimator.estimateCost(mockTeam, mockProcess, 8))
-                    .thenReturn(5000f);
+                    .thenReturn(Float.valueOf(5000f));
 
             boolean result = budgetService.isBudgetFeasible(mockTeam, mockProcess, 8, 6000f);
 
@@ -41,7 +41,7 @@ class BudgetServiceTest {
     void isBudgetFeasible_estimatedCostAboveMax_returnsFalse() {
         try (MockedStatic<CostEstimator> mockedEstimator = mockStatic(CostEstimator.class)) {
             mockedEstimator.when(() -> CostEstimator.estimateCost(mockTeam, mockProcess, 8))
-                    .thenReturn(9000f);
+                    .thenReturn(Float.valueOf(9000f));
 
             boolean result = budgetService.isBudgetFeasible(mockTeam, mockProcess, 8, 6000f);
 
