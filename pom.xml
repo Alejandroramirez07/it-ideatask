@@ -12,6 +12,16 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
+
+        <sonar.projectKey>it-ideatask-key</sonar.projectKey>
+        <sonar.projectName>it-ideatask</sonar.projectName>
+        <sonar.organization>solvd</sonar.organization>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.token>sqp_72c3f6a1bbe3285f90a25a0f717cd8d1c9b32359</sonar.token>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.reporting.outputDirectory}/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+
     </properties>
 
     <dependencies>
