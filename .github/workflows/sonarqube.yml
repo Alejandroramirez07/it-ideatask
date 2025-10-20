@@ -16,12 +16,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Run SonarQube with Java 17
+    - name: Build with explicit Java 17 compiler args
       run: |
-        mvn -B clean compile test jacoco:report sonar:sonar \
-          -Dsonar.projectKey=it-ideatask \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        mvn -B clean compile test jacoco:report \
+          -Dmaven.compiler.source=17 \
+          -Dmaven.compiler.target=17 \
+          -Dmaven.compiler.release=17
+          
+    - name: Run SonarQube analysis
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: |
+        mvn sonar:sonar \
+          -Dsonar.projectKey=it-ideatask \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dmaven.compiler.source=17 \
+          -Dmaven.compiler.target=17
