@@ -18,7 +18,13 @@ public class SplunkMonitoringDAOImpl implements SplunkMonitoringDAO {
     private static final Logger LOGGER = LogManager.getLogger(SplunkMonitoringDAOImpl.class);
     @Override
     public int save(SplunkMonitoring splunkMonitoring){
-        String sql = "INSERT INTO splunk_monitoring (project_code, monitor_comments, number_incidents) VALUES (?, ?, ?)";
+        String sql = """
+        INSERT INTO splunk_monitoring (project_code, monitor_comments, number_incidents)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        monitor_comments = VALUES(monitor_comments),
+        number_incidents = VALUES(number_incidents)
+        """;;
         int generatedId = -1;
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement ps= connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {

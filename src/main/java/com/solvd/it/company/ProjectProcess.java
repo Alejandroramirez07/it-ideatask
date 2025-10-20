@@ -13,14 +13,8 @@ public class ProjectProcess extends TimeMetrics implements Evaluation {
     private int weeks;
     private int hoursPerWeek;
 
-    public ProjectProcess(int weeks, int hoursPerWeek, String deadlineDelivery) throws InvalidProjectDeadlineException {
-        super(deadlineDelivery);
-        if (deadlineDelivery == null || deadlineDelivery.isBlank()) {
-            throw new InvalidProjectDeadlineException("Deadline cannot be empty");
-        }
-        if (!deadlineDelivery.matches("\\d{2}/\\d{2}/\\d{4}")) {
-            throw new InvalidProjectDeadlineException("Deadline must be in format MM/DD/YYYY: " + deadlineDelivery);
-        }
+    public ProjectProcess(int weeks, int hoursPerWeek, LocalDate deadlineDelivery) throws InvalidProjectDeadlineException {
+        super(String.valueOf(deadlineDelivery));
         this.weeks = weeks;
         this.hoursPerWeek = hoursPerWeek;
     }
@@ -54,7 +48,7 @@ public class ProjectProcess extends TimeMetrics implements Evaluation {
     {
         todaysDate = LocalDate.now();
     }
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
     LocalDate deadlineDate=LocalDate.parse(getDeadlineDelivery(), formatter);
 
     @Override

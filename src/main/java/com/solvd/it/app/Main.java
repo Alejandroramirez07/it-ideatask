@@ -4,7 +4,6 @@ import com.solvd.it.annotations.CheckBeforeDelivery;
 import com.solvd.it.annotations.PriorityToRun;
 import com.solvd.it.compInterfaces.StockProjects;
 import com.solvd.it.company.*;
-import com.solvd.it.dao.implementation.ProjectDAOImpl;
 import com.solvd.it.dao.implementation.SplunkMonitoringDAOImpl;
 import com.solvd.it.exceptions.*;
 import com.solvd.it.enums.*;
@@ -21,6 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static com.solvd.it.company.Team.maxTeam;
@@ -111,19 +113,42 @@ public class Main {
         }
 
         LOGGER.info("Enter initial budget: ");
-        float budget = scanner.nextFloat();
+        if (scanner.hasNextLine()) scanner.nextLine();
+        float budget = 0f;
+        try {
+            String budgetInput = scanner.nextLine().trim();
+            budget = Float.parseFloat(budgetInput);
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid input for budget: " + e.getMessage());
+        }
         scanner.nextLine();
 
         LOGGER.info("Enter the deadline date for this project MM/DD/YYYY");
-        String deadlineDelivery = scanner.nextLine();
+        LocalDate deadlineDelivery = null;
+        try {
+            String deadlineInput = scanner.nextLine().trim();
+            deadlineDelivery = LocalDate.parse(deadlineInput, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+        } catch (DateTimeParseException e) {
+            LOGGER.error("Invalid input for deadline date: " + e.getMessage());
+            deadlineDelivery = LocalDate.now().plusWeeks(4);
+        }
+
 
         Project project = new Project(projectName, complexity, budget, clientName);
 
         List<Developer> devList = new ArrayList<>();
 
         LOGGER.info("Enter number of developers: ");
-        int numDevs = scanner.nextInt();
-        scanner.nextLine();
+        int numDevs = 0;
+        try {
+            numDevs = Integer.parseInt(scanner.nextLine().trim());
+            if (numDevs <= 0) {
+                LOGGER.error("Invalid team size, cannot be negative: A team must have at least one developer.");
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid input for number of developers: " + e.getMessage());
+        }
+
 
         while (numDevs>maxTeam){
             LOGGER.error("WRONG ANSWER");
@@ -199,12 +224,26 @@ public class Main {
                 .forEach(Developer::valueRole);
 
         LOGGER.info("Enter project duration in weeks: ");
-        int weeks = scanner.nextInt();
-        scanner.nextLine();
+        int weeks=0;
+        try {
+            weeks = Integer.parseInt(scanner.nextLine().trim());
+            if (weeks <= 0) {
+                LOGGER.error("Invalid project duration: Must be greater than zero.");
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid input for project duration: " + e.getMessage());
+        }
 
         LOGGER.info("Enter hours per developer per week: ");
-        int hoursPerWeek = scanner.nextInt();
-        scanner.nextLine();
+        int hoursPerWeek=0;
+        try {
+            hoursPerWeek = Integer.parseInt(scanner.nextLine().trim());
+            if (hoursPerWeek <= 0) {
+                LOGGER.error("Invalid hours per week: Must be greater than zero.");
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid input for hours per week: " + e.getMessage());
+        }
 
         ProjectProcess projectProcess = null;
         try {
@@ -226,7 +265,12 @@ public class Main {
 
         int averageHolidaysWeeks;
         TimeOutForHire timeOutForHire = new TimeOutForHire(averageHolidays, CvsEntered, technologies);
-        averageHolidaysWeeks = averageHolidays / devList.size();
+
+        if (devList.size()>0){
+            averageHolidaysWeeks = averageHolidays / devList.size();
+        }else{
+            averageHolidaysWeeks=averageHolidays;
+        }
 
         List<String> featuresList = new ArrayList<>();
         for (int i = 0; i < features; i++) {
@@ -273,6 +317,12 @@ public class Main {
         LOGGER.info("Enter manager name: ");
         String managerName = scanner.nextLine();
         LOGGER.info("Enter manager hourly rate: ");
+        while (!scanner.hasNextFloat()) {
+            String badInput = scanner.nextLine();
+            if (!badInput.isBlank()) {
+                LOGGER.error("Invalid number input for hourly rate: {}", badInput);
+            }
+        }
         float managerRate = scanner.nextFloat();
         LOGGER.info("Enter manager level jr/mid/sr");
         String managerLevel=scanner.nextLine();
@@ -339,8 +389,20 @@ public class Main {
         LOGGER.info("Please, enter the comments from the monitor");
         String monitorComments= scanner.nextLine();
 
-        LOGGER.info("Please, enter the number of incidents");
-        int numberIncidents= scanner.nextInt();
+        int numberIncidents = 0;
+        boolean validIncidents = false;
+
+        while (!validIncidents) {
+            LOGGER.info("Please, enter the number of incidents");
+
+            String input = scanner.nextLine().trim();
+            try {
+                numberIncidents = Integer.parseInt(input);
+                validIncidents = true;
+            } catch (NumberFormatException e) {
+                LOGGER.error("Invalid input for number of incidents: {}", input);
+            }
+        }
 
         SplunkMonitoring splunkMonitoring = new SplunkMonitoring(projectCode, monitorComments, numberIncidents);
         SplunkMonitoringDAOImpl splunkMonitoringDAOImpl =new SplunkMonitoringDAOImpl();
@@ -378,8 +440,15 @@ public class Main {
 
         LOGGER.info("Ads creation process for '" + projectScope.getScope() + "' completed successfully!");
 
-        assert team != null;
-        assert projectProcess != null;
+        if (team == null) {
+            LOGGER.error("Team object was not initialized properly. Skipping project summary generation.");
+            return;
+        }
+
+        if (projectProcess == null) {
+            LOGGER.error("ProjectProcess was not created due to invalid input or missing data.");
+            return;
+        }
         Report report = new Report((float) cost, projectProcess.getWeeks(), team.getTeamSize(), timeOutForHire.averageHolidaysReplacement);
 
         LOGGER.info("\n--- Project Summary ---");
