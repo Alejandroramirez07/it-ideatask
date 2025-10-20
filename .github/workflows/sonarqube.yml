@@ -1,0 +1,36 @@
+name: SonarQube Analysis
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Build with explicit Java 17 compiler args
+      run: |
+        mvn -B clean compile test jacoco:report \
+          -Dmaven.compiler.source=17 \
+          -Dmaven.compiler.target=17 \
+          -Dmaven.compiler.release=17
+          
+    - name: Run SonarQube analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      run: |
+        mvn sonar:sonar \
+          -Dsonar.projectKey=it-ideatask \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dmaven.compiler.source=17 \
+          -Dmaven.compiler.target=17

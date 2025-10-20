@@ -1,6 +1,6 @@
 SolvdJavaProject1
 
-This repository showcases my skills as an AWS-certified DevOps Engineer with experience in software development using Java and Python. The project focuses on building and automating infrastructure in the cloud.
+This repository showcases my skills as a certified software developer with DevOps and ArcGIS. Mainly experienced using Java and Python. The project focuses on building and automating infrastructure in the cloud.
 Project Description
 
 This is a Java project created for the IT Idea task. It demonstrates object-oriented programming principles, including the use of abstract classes, interfaces, enums, and custom exceptions. The project structure is managed with Maven.
