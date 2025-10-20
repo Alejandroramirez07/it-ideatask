@@ -89,3 +89,5 @@ class MainTest {
         }
     }
 }
+
+// Co-generated with AI assistance (GPT-5), reviewed and validated by Alejandro Ramirez
